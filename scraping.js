@@ -8,9 +8,25 @@ const urlFalabella = 'https://www.falabella.com/falabella-cl/product/15706659/Co
 const urlHites = 'https://www.hites.com/consola-sony-playstation-5-edicion-con-disco-837800001.html?gclid=Cj0KCQjw8O-VBhCpARIsACMvVLMYOVflwDsi5fPx4jWSU-7SarW_AqMnvNg-yxQKPrSnrlLmzkmJKYsaAqfEEALw_wcB';
 const urlPcNitro = 'https://pcnitro.cl/inicio/19241-playstation-5-consola-playstation-5-sony-825gb-digital-edition-color-blanco-y-negro.html';
 const urlGoldenGamer = 'https://goldengamers.cl/products/playstation-5-digital-edicion-jp';
+const urlTottus = 'https://www.tottus.cl/playstation-consola-playstation-5-digital-sony-20756270/p/?utm_source=mediasur&utm_medium=banner&utm_campaign=electro_ao_ene21_mediasur_banner&utm_content=electro_ao_ene21_mediasur_banner-2163342757';
+
 const datos = [];
 
+async function scrapearTottusPS5() {
+    const browser = await puppeteer.launch({
+        defaultViewport: null
+    });
+    const page = await browser.newPage();
+    await page.goto(urlTottus);
+    const text = await page.evaluate(() => {
+        return document.querySelector('#container > section > div.jsx-4104767650.jsx-3114293674.columns > div.jsx-4104767650.jsx-3114293674.column-right > div > div.jsx-1050174312.ProductPrice.big > span > span.list.price.medium.cmrPrice').innerText;
+    });
+    await page.close();
+    await browser.close();
 
+    const PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
+    datos.push({ url: urlTottus, precio: text, precioParse: PRECIOREAL });
+}
 
 async function scrapearGoldenGamerPS5() {
     const { data } = await axios.get(urlGoldenGamer);
@@ -71,23 +87,26 @@ async function scrapearLaPolarPS5() {
 }
 
 async function scrapearFalabellaPS5() {
+    let PRECIOREAL = 0
     const browser = await puppeteer.launch({
         defaultViewport: null
     });
     const page = await browser.newPage();
-    await page.goto(urlFalabella);
-    const text = await page.evaluate(() => {
-        return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
-    });
+
+        await page.goto(urlFalabella);
+        const text = await page.evaluate(() => {
+            return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
+        });
+
+        PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
+        datos.push({ url: urlFalabella, precio: text, precioParse: PRECIOREAL });
+
     await page.close();
     await browser.close();
-
-    const PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
-    datos.push({ url: urlFalabella, precio: text, precioParse: PRECIOREAL });
 }
 
 const allPromise = Promise.all([scrapearParisPS5(), scrapearWeplayPS5(),scrapearLaPolarPS5(),scrapearFalabellaPS5(),scrapearHitesPS5(),scrapearPcNitroPS5(),
-    scrapearGoldenGamerPS5()]);
+    scrapearGoldenGamerPS5(),scrapearTottusPS5()]);
 
 setTimeout(() => {
     response();
@@ -113,4 +132,5 @@ function DrawTable(objet)
         console.log(`Link del Comercio : $ ${values.url}`)
         console.log("****************************************************")     
     });
+    //console.log(JSON.stringify(objet))
 }
