@@ -2,14 +2,18 @@
   "name": "scraping-test",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "scraping.js",
   "scripts": {
+    "start": "node scraping.js",
+    "dev": "nodemon scraping.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "node-fetch": "^3.2.6",
+    "puppeteer": "^15.2.0"
   }
 }
