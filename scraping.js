@@ -16,7 +16,7 @@ const datos = [];
 
 const express = require('express');
 const app = express();
-app.use(timeout('25s'));
+app.use(timeout('59s'));
 const puerto = 3000;
 
 app.get('/',(req,res)=>{
