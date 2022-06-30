@@ -15,7 +15,7 @@ const datos = [];
 
 const express = require('express');
 const app = express();
-const puerto = 5000;
+const puerto = 3000;
 
 app.get('/',(req,res)=>{
     allPromise.then(values => {
@@ -27,7 +27,7 @@ app.get('/',(req,res)=>{
 })
 
 
-app.listen(puerto,()=>{
+app.listen(process.env.PORT || puerto,()=>{
     console.log(`app corriendo en el puerto ${puerto}`)
 })
 
