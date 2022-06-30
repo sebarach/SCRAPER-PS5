@@ -127,22 +127,22 @@ async function scrapearLaPolarPS5() {
 }
 
 async function scrapearFalabellaPS5() {
-    let PRECIOREAL = 0
-    const browser = await puppeteer.launch({
-        defaultViewport: null
-    });
-    const page = await browser.newPage();
+    // let PRECIOREAL = 0
+    // const browser = await puppeteer.launch({
+    //     defaultViewport: null
+    // });
+    // const page = await browser.newPage();
 
-        await page.goto(urlFalabella);
-        const text = await page.evaluate(() => {
-            return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
-        });
+    //     await page.goto(urlFalabella);
+    //     const text = await page.evaluate(() => {
+    //         return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
+    //     });
 
-        PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
-        datos.push({ url: urlFalabella, precio: text, precioParse: PRECIOREAL });
+    //     PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
+    //     datos.push({ url: urlFalabella, precio: text, precioParse: PRECIOREAL });
 
-    await page.close();
-    await browser.close();
+    // await page.close();
+    // await browser.close();
 }
 
 const allPromise = Promise.all([scrapearParisPS5(), scrapearWeplayPS5(),scrapearLaPolarPS5(),scrapearFalabellaPS5(),scrapearHitesPS5(),scrapearPcNitroPS5(),
