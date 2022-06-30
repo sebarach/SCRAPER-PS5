@@ -1,6 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const puppeteer = require('puppeteer');
+const timeout = require('connect-timeout')
 const urlParis = 'https://www.paris.cl/consola-ps5-440437999.html?utm_source=soicos&utm_medium=referral';
 const urlWeplay = 'https://www.weplay.cl/consola-playstation-5.html';
 const urlLaPolar = 'https://www.lapolar.cl/consola-sony-playstation-5-control/23395401.html';
@@ -15,6 +16,7 @@ const datos = [];
 
 const express = require('express');
 const app = express();
+app.use(timeout('25s'));
 const puerto = 3000;
 
 app.get('/',(req,res)=>{
