@@ -19,14 +19,20 @@ const app = express();
 app.use(timeout('59s'));
 const puerto = 3000;
 
-app.get('/',(req,res)=>{
+app.get('/scraping',(req,res)=>{
     allPromise.then(values => {
-        DrawTable(datos);
+        //DrawTable(datos);
         res.json(datos);
       }).catch(error => {
         error;
       });  
 })
+
+app.get('/',(req,res)=>{
+    res.send('test');
+})
+
+
 
 
 app.listen(process.env.PORT || puerto,()=>{
@@ -49,23 +55,23 @@ async function scrapearRipleyPS5() {
 
 
 async function scrapearTottusPS5() {
-    try {
-    const browser = await puppeteer.launch({
-        defaultViewport: null
-    });
-    const page = await browser.newPage();
-    await page.goto(urlTottus);
-    const text = await page.evaluate(() => {
-        return document.querySelector('#container > section > div.jsx-4104767650.jsx-3114293674.columns > div.jsx-4104767650.jsx-3114293674.column-right > div > div.jsx-1050174312.ProductPrice.big > span > span.list.price.medium.cmrPrice').innerText;
-    });
-    await page.close();
-    await browser.close();
+    // try {
+    // const browser = await puppeteer.launch({
+    //     defaultViewport: null
+    // });
+    // const page = await browser.newPage();
+    // await page.goto(urlTottus);
+    // const text = await page.evaluate(() => {
+    //     return document.querySelector('#container > section > div.jsx-4104767650.jsx-3114293674.columns > div.jsx-4104767650.jsx-3114293674.column-right > div > div.jsx-1050174312.ProductPrice.big > span > span.list.price.medium.cmrPrice').innerText;
+    // });
+    // await page.close();
+    // await browser.close();
 
-    const PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
-    datos.push({ url: urlTottus, precio: text, precioParse: PRECIOREAL });  
-    } catch(error) {
-        datos.push({ url: urlTottus, precio:'ERROR', precioParse: 0 });  
-    }
+    // const PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
+    // datos.push({ url: urlTottus, precio: text, precioParse: PRECIOREAL });  
+    // } catch(error) {
+    //     datos.push({ url: urlTottus, precio:'ERROR', precioParse: 0 });  
+    // }
 }
 
 async function scrapearGoldenGamerPS5() {
@@ -78,19 +84,19 @@ async function scrapearGoldenGamerPS5() {
 
 
 async function scrapearPcNitroPS5() {
-    const browser = await puppeteer.launch({
-        defaultViewport: null
-    });
-    const page = await browser.newPage();
-    await page.goto(urlPcNitro);
-    const text = await page.evaluate(() => {
-        return document.querySelector('#main > div.tvproduct-page-wrapper > div.tvprduct-image-info-wrapper.clearfix.row > div.col-md-6.tv-product-page-content > div.product-prices > div.product-price.h5 > div > span').innerText;
-    });
-    await page.close();
-    await browser.close();
+    // const browser = await puppeteer.launch({
+    //     defaultViewport: null
+    // });
+    // const page = await browser.newPage();
+    // await page.goto(urlPcNitro);
+    // const text = await page.evaluate(() => {
+    //     return document.querySelector('#main > div.tvproduct-page-wrapper > div.tvprduct-image-info-wrapper.clearfix.row > div.col-md-6.tv-product-page-content > div.product-prices > div.product-price.h5 > div > span').innerText;
+    // });
+    // await page.close();
+    // await browser.close();
 
-    const PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
-    datos.push({ url: urlPcNitro, precio: text, precioParse: PRECIOREAL });
+    // const PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
+    // datos.push({ url: urlPcNitro, precio: text, precioParse: PRECIOREAL });
 }
 
 async function scrapearHitesPS5() {
