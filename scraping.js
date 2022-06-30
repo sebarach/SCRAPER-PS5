@@ -21,7 +21,7 @@ const puerto = 3000;
 
 app.get('/',(req,res)=>{
     allPromise.then(values => {
-        //DrawTable(datos);
+        DrawTable(datos);
         res.json(datos);
       }).catch(error => {
         error;
@@ -44,7 +44,7 @@ async function scrapearRipleyPS5() {
     try {
         const { data } = await axios.get(urlRipley);
         const $ = cheerio.load(data);
-        const precio = $('#row > div.col-xs-12.col-sm-12.col-md-5 > section.product-info > dl > div.product-price-container.product-ripley-price > dt').first().text();
+        const precio = $('#row > div.col-xs-12.col-sm-12.col-md-5 > section.product-info > dl > div.product-price-container.product-internet-price-not-best > dt').first().text();
         const PRECIOREAL = parseInt(precio.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
         datos.push({ url: urlRipley, precio: precio, precioParse: PRECIOREAL });
     }catch (error) {
