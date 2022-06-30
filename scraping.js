@@ -19,7 +19,7 @@ const app = express();
 app.use(timeout('59s'));
 const puerto = 3000;
 
-app.get('/scraping',(req,res)=>{
+app.get('/',(req,res)=>{
     allPromise.then(values => {
         //DrawTable(datos);
         res.json(datos);
@@ -28,9 +28,9 @@ app.get('/scraping',(req,res)=>{
       });  
 })
 
-app.get('/',(req,res)=>{
-    res.send('test');
-})
+// app.get('/',(req,res)=>{
+//     res.send('test');
+// })
 
 
 
