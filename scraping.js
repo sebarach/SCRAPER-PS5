@@ -9,10 +9,45 @@ const urlHites = 'https://www.hites.com/consola-sony-playstation-5-edicion-con-d
 const urlPcNitro = 'https://pcnitro.cl/inicio/19241-playstation-5-consola-playstation-5-sony-825gb-digital-edition-color-blanco-y-negro.html';
 const urlGoldenGamer = 'https://goldengamers.cl/products/playstation-5-digital-edicion-jp';
 const urlTottus = 'https://www.tottus.cl/playstation-consola-playstation-5-digital-sony-20756270/p/?utm_source=mediasur&utm_medium=banner&utm_campaign=electro_ao_ene21_mediasur_banner&utm_content=electro_ao_ene21_mediasur_banner-2163342757';
+const urlRipley = 'https://simple.ripley.cl/consola-ps5-digital-2000380458314p?s=mdco';
 
 const datos = [];
 
+const express = require('express');
+const app = express();
+const puerto = 5000;
+
+app.get('/',(req,res)=>{
+    allPromise.then(values => {
+        DrawTable(datos);
+        res.json(datos);
+      }).catch(error => {
+        error;
+      });  
+})
+
+
+app.listen(puerto,()=>{
+    console.log(`app corriendo en el puerto ${puerto}`)
+})
+
+
+async function scrapearRipleyPS5() {
+    try {
+        const { data } = await axios.get(urlRipley);
+        const $ = cheerio.load(data);
+        const precio = $('#row > div.col-xs-12.col-sm-12.col-md-5 > section.product-info > dl > div.product-price-container.product-ripley-price > dt').first().text();
+        const PRECIOREAL = parseInt(precio.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
+        datos.push({ url: urlRipley, precio: precio, precioParse: PRECIOREAL });
+    }catch (error) {
+        datos.push({ url: urlRipley, precio: 'ERROR', precioParse: 0 });
+    }
+}
+
+
+
 async function scrapearTottusPS5() {
+    try {
     const browser = await puppeteer.launch({
         defaultViewport: null
     });
@@ -25,7 +60,10 @@ async function scrapearTottusPS5() {
     await browser.close();
 
     const PRECIOREAL = parseInt(text.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
-    datos.push({ url: urlTottus, precio: text, precioParse: PRECIOREAL });
+    datos.push({ url: urlTottus, precio: text, precioParse: PRECIOREAL });  
+    } catch(error) {
+        datos.push({ url: urlTottus, precio:'ERROR', precioParse: 0 });  
+    }
 }
 
 async function scrapearGoldenGamerPS5() {
@@ -58,7 +96,7 @@ async function scrapearHitesPS5() {
     const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
     const precio = $('#zoom-837800001 > div.row.d-none.d-lg-flex > div > div > div > div > span.price-item.sales > span').first().text();
     const PRECIOREAL = parseInt(precio.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, ""));
-    datos.push({ url: urlHites, precio: precio, precioParse: PRECIOREAL });
+    datos.push({ url: urlHites, precio: precio.trim(), precioParse: PRECIOREAL });
 }
 
 async function scrapearParisPS5() {
@@ -106,20 +144,21 @@ async function scrapearFalabellaPS5() {
 }
 
 const allPromise = Promise.all([scrapearParisPS5(), scrapearWeplayPS5(),scrapearLaPolarPS5(),scrapearFalabellaPS5(),scrapearHitesPS5(),scrapearPcNitroPS5(),
-    scrapearGoldenGamerPS5(),scrapearTottusPS5()]);
-
-setTimeout(() => {
-    response();
-},30000);
+    scrapearGoldenGamerPS5(),scrapearTottusPS5(),scrapearRipleyPS5()]);
 
 
-const response = () =>allPromise.then(values => {
+console.log("Buscando Ofertas ................");
+
+
+
+  const response = () =>allPromise.then(values => {
     DrawTable(datos);
+
   }).catch(error => {
     error;
   });
 
-
+  response();
 
 function DrawTable(objet)
 {
@@ -127,10 +166,11 @@ function DrawTable(objet)
     console.log("-----------------------------------------------------------------------")
     console.log("-----------------------------------------------------------------------")
     objet.map((values)=>{
-        console.log(values.precioParse < 600000 ? '@@@@@@ OFERTA @@@@@@@' : 'Sin Oferta')  
+        if(values.precioParse < 600000 && values.precioParse != 0){console.log('@@@@@@ OFERTA @@@@@@@')}
+        if(values.precioParse > 600000){console.log('Sin Oferta')}
+        if(values.precio ==='ERROR'){console.log('ERROR EN LA PAGINA')}
         console.log(`Precio : $${values.precioParse} Pesos`)   
         console.log(`Link del Comercio : $ ${values.url}`)
         console.log("****************************************************")     
     });
-    //console.log(JSON.stringify(objet))
 }
