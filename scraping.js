@@ -57,7 +57,8 @@ async function scrapearRipleyPS5() {
 async function scrapearTottusPS5() {
     try {
     const browser = await puppeteer.launch({
-        defaultViewport: null,headless:false
+        defaultViewport: null,headless:true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
     const page = await browser.newPage();
     await page.goto(urlTottus);
