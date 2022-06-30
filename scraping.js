@@ -10,13 +10,13 @@ const urlHites = 'https://www.hites.com/consola-sony-playstation-5-edicion-con-d
 const urlPcNitro = 'https://pcnitro.cl/inicio/19241-playstation-5-consola-playstation-5-sony-825gb-digital-edition-color-blanco-y-negro.html';
 const urlGoldenGamer = 'https://goldengamers.cl/products/playstation-5-digital-edicion-jp';
 const urlTottus = 'https://www.tottus.cl/playstation-consola-playstation-5-digital-sony-20756270/p/?utm_source=mediasur&utm_medium=banner&utm_campaign=electro_ao_ene21_mediasur_banner&utm_content=electro_ao_ene21_mediasur_banner-2163342757';
-const urlRipley = 'https://simple.ripley.cl/consola-ps5-digital-2000380458314p?s=mdco';
+const urlRipley = 'http://simple.ripley.cl/consola-ps5-digital-2000380458314p?s=mdco';
 
 const datos = [];
 
 const express = require('express');
 const app = express();
-app.use(timeout('59s'));
+app.use(timeout('45s'));
 const puerto = 3000;
 
 app.get('/',(req,res)=>{
