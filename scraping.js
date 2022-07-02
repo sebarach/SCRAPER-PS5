@@ -22,6 +22,28 @@ app.use(cors());
 const puerto = 3000;
 
 
+app.use((req,res,next)  => {
+    if (!req.get('Authorization')) {
+        var err = new Error('No estas autorizado');
+        res.status(401).set('WWW-Authenticate', 'Basic');
+        next(err);
+    } else {
+        var credenciales = Buffer.from(req.get('Authorization').split(' ')[1],'base64').toString()
+        .split(':');
+
+        var user = credenciales[0];
+        var pass = credenciales[1];
+        if (!(user ==='sebastian' && pass === '123')) {
+            var err = new Error('Invalid credentials');
+            res.status(401).set('WWW-Authenticate', 'Basic');
+            next(err);
+        } else {
+            res.status(200);
+            next();
+        }
+    }
+})
+
 app.get('/',(req,res)=>{
     allPromise.then(values => {
         DrawTable(datos);
