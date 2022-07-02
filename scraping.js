@@ -2,7 +2,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const puppeteer = require('puppeteer');
-const helmet = require('helmet');
+var cors = require('cors')
 const urlParis = 'https://www.paris.cl/consola-ps5-440437999.html?utm_source=soicos&utm_medium=referral';
 const urlWeplay = 'https://www.weplay.cl/consola-playstation-5.html';
 const urlLaPolar = 'https://www.lapolar.cl/consola-sony-playstation-5-control/23395401.html';
@@ -18,8 +18,7 @@ const datos = [];
 const formatearPrecio = (precio)=> precio.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, "");
 const express = require('express');
 const app = express();
-app.use(helmet());
-
+app.use(cors());
 const puerto = 3000;
 
 
@@ -47,7 +46,7 @@ async function scrapearProMovilPS5() {
     });
     await page.close();
     await browser.close();
-    datos.push({ url: urlProMovil, precio: text, precioParse: formatearPrecio(text) });  
+    datos.push({ url: urlProMovil, precio: text, precioParse: formatearPrecio(text),tienda:"Pro Movil" });  
     } catch(error) {
         console.log(error); 
         await page.close();
@@ -61,7 +60,7 @@ async function scrapearRipleyPS5() {
         const { data } = await axios.get(urlRipley);
         const $ = cheerio.load(data);
         const precio = $('#row > div.col-xs-12.col-sm-12.col-md-5 > section.product-info > dl > div.product-price-container.product-internet-price-not-best > dt').first().text();
-        datos.push({ url: urlRipley, precio: precio, precioParse: formatearPrecio(precio) });
+        datos.push({ url: urlRipley, precio: precio, precioParse: formatearPrecio(precio),tienda:"Ripley" });
     }catch (error) {
         console.log(error);
     }
@@ -79,7 +78,7 @@ async function scrapearTottusPS5() {
     });
     await page.close();
     await browser.close();
-    datos.push({ url: urlTottus, precio: text, precioParse: formatearPrecio(text) });  
+    datos.push({ url: urlTottus, precio: text, precioParse: formatearPrecio(text),tienda:"Tottus" });  
     } catch(error) {
         console.log(error); 
         await page.close();
@@ -92,7 +91,7 @@ async function scrapearGoldenGamerPS5() {
         const { data } = await axios.get(urlGoldenGamer);
         const $ = cheerio.load(data);
         const precio = $('#ProductPrice-product-template > span').first().text();
-        datos.push({ url: urlGoldenGamer, precio: precio, precioParse: formatearPrecio(precio) });
+        datos.push({ url: urlGoldenGamer, precio: precio, precioParse: formatearPrecio(precio),tienda:"Golden Gamer" });
     } catch (error) {
         console.log(error);
     }
@@ -110,7 +109,7 @@ async function scrapearPcNitroPS5() {
         });
         await page.close();
         await browser.close();
-       datos.push({ url: urlPcNitro, precio: text, precioParse: formatearPrecio(text) });
+       datos.push({ url: urlPcNitro, precio: text, precioParse: formatearPrecio(text),tienda:"PC Nitro" });
     } catch (error) {
         console.log(error);
     }
@@ -122,7 +121,7 @@ async function scrapearHitesPS5() {
         const { data } = await axios.get(urlHites);
         const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
         const precio = $('#zoom-837800001 > div.row.d-none.d-lg-flex > div > div > div > div > span.price-item.sales > span').first().text();
-        datos.push({ url: urlHites, precio: precio.trim(), precioParse: formatearPrecio(precio) });
+        datos.push({ url: urlHites, precio: precio.trim(), precioParse: formatearPrecio(precio),tienda:"Hites" });
     } catch (error) {
         console.log(error);
     }
@@ -134,7 +133,7 @@ async function scrapearParisPS5() {
         const { data } = await axios.get(urlParis);
         const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
         const precio = $('#pdpMain > div > div.col-xs-12.col-sm-12.col-md-6.col-lg-5.info-product-detail > div > div.col-xs-12.product-price-2 > div > div.price__inner > div.price__text-wrap.price__text-wrap--primary > div.price__text').first().text();
-       datos.push({ url: urlParis, precio: precio, precioParse: formatearPrecio(precio) });
+       datos.push({ url: urlParis, precio: precio, precioParse: formatearPrecio(precio),tienda:"Paris" });
     } catch (error) {
         console.error(error);
     }
@@ -146,7 +145,7 @@ async function scrapearWeplayPS5() {
         const { data } = await axios.get(urlWeplay);
         const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
         const precio = $('#product-price-35943 > span').first().text();
-        datos.push({ url: urlWeplay, precio: precio, precioParse: formatearPrecio(precio) });  
+        datos.push({ url: urlWeplay, precio: precio, precioParse: formatearPrecio(precio),tienda:"Weplay" });  
     } catch (error) {
         console.error(error);
     }
@@ -159,7 +158,7 @@ async function scrapearLaPolarPS5() {
         const { data } = await axios.get(urlLaPolar);
         const $ = cheerio.load(data);
         const precio = $('body > div.page > div > div.ms-contain-desktoplarge.pdp-wrapper.product-wrapper.product-detail > div.ms-row.pdp-image-and-detail.ms-margin-hp.collapsed.product-detail > div.pdp-right-content.details-container.col-xs-12.col-sm.ms-no-padding.js-details-container > div > div.col-xs-12.ms-flex.ms-no-padding.prices-actions > div > p.la-polar.price.js-tlp-price.lp-font--barlow-bold.ms-flex > span.price-value').text();
-        datos.push({ url: urlLaPolar, precio: precio, precioParse: formatearPrecio(precio) });
+        datos.push({ url: urlLaPolar, precio: precio, precioParse: formatearPrecio(precio),tienda:"La Polar" });
     } catch (error) {
         console.log(error);
     }
@@ -176,7 +175,7 @@ async function scrapearFalabellaPS5() {
             const text = await page.evaluate(() => {
                 return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
             });
-           datos.push({ url: urlFalabella, precio: text, precioParse: formatearPrecio(text)});
+           datos.push({ url: urlFalabella, precio: text, precioParse: formatearPrecio(text),tienda:"Falabella"});
     
         await page.close();
         await browser.close();
