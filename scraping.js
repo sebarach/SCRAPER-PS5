@@ -2,7 +2,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const puppeteer = require('puppeteer');
-const timeout = require('connect-timeout')
+const helmet = require('helmet');
 const urlParis = 'https://www.paris.cl/consola-ps5-440437999.html?utm_source=soicos&utm_medium=referral';
 const urlWeplay = 'https://www.weplay.cl/consola-playstation-5.html';
 const urlLaPolar = 'https://www.lapolar.cl/consola-sony-playstation-5-control/23395401.html';
@@ -12,17 +12,16 @@ const urlPcNitro = 'https://pcnitro.cl/inicio/19241-playstation-5-consola-playst
 const urlGoldenGamer = 'https://goldengamers.cl/products/playstation-5-digital-edicion-jp';
 const urlTottus = 'https://www.tottus.cl/playstation-consola-playstation-5-digital-sony-20756270/p/?utm_source=mediasur&utm_medium=banner&utm_campaign=electro_ao_ene21_mediasur_banner&utm_content=electro_ao_ene21_mediasur_banner-2163342757';
 const urlRipley = 'http://simple.ripley.cl/consola-ps5-digital-2000380458314p?s=mdco';
+const urlProMovil = 'https://www.promovil.cl/inicio/2716-consola-playstation-5-ps5-edici%C3%B3n-digital-blanca.html';
 const datos = [];
 
-//import {formatearPrecio} from './utils.js'
-//const util = require('./utils.js');
-
 const formatearPrecio = (precio)=> precio.replace(/[^0-9,.]+/g, "").replace(/[,.]+/g, "");
-
 const express = require('express');
 const app = express();
-app.use(timeout('45s'));
+app.use(helmet());
+
 const puerto = 3000;
+
 
 app.get('/',(req,res)=>{
     allPromise.then(values => {
@@ -38,6 +37,24 @@ app.listen(process.env.PORT || puerto,()=>{
     console.log(`app corriendo en el puerto ${puerto}`)
 })
 
+async function scrapearProMovilPS5() {
+    try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(urlProMovil);
+    const text = await page.evaluate(() => {
+        return document.querySelector('#main > div:nth-child(2) > div.col-md-7 > div.product-prices > div.product-price.h5.has-discount > div > span:nth-child(1)').innerText;
+    });
+    await page.close();
+    await browser.close();
+    datos.push({ url: urlProMovil, precio: text, precioParse: formatearPrecio(text) });  
+    } catch(error) {
+        console.log(error); 
+        await page.close();
+        await browser.close();
+    }
+}
+
 
 async function scrapearRipleyPS5() {
     try {
@@ -46,7 +63,7 @@ async function scrapearRipleyPS5() {
         const precio = $('#row > div.col-xs-12.col-sm-12.col-md-5 > section.product-info > dl > div.product-price-container.product-internet-price-not-best > dt').first().text();
         datos.push({ url: urlRipley, precio: precio, precioParse: formatearPrecio(precio) });
     }catch (error) {
-        datos.push({ url: urlRipley, precio: 'ERROR', precioParse: 0 });
+        console.log(error);
     }
 }
 
@@ -64,78 +81,115 @@ async function scrapearTottusPS5() {
     await browser.close();
     datos.push({ url: urlTottus, precio: text, precioParse: formatearPrecio(text) });  
     } catch(error) {
-        datos.push({ url: urlTottus, precio:'ERROR', precioParse: 0 });  
+        console.log(error); 
         await page.close();
         await browser.close();
     }
 }
 
 async function scrapearGoldenGamerPS5() {
-    const { data } = await axios.get(urlGoldenGamer);
-    const $ = cheerio.load(data);
-    const precio = $('#ProductPrice-product-template > span').first().text();
-    datos.push({ url: urlGoldenGamer, precio: precio, precioParse: formatearPrecio(precio) });
+    try {
+        const { data } = await axios.get(urlGoldenGamer);
+        const $ = cheerio.load(data);
+        const precio = $('#ProductPrice-product-template > span').first().text();
+        datos.push({ url: urlGoldenGamer, precio: precio, precioParse: formatearPrecio(precio) });
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
 
 async function scrapearPcNitroPS5() {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(urlPcNitro);
-    const text = await page.evaluate(() => {
-        return document.querySelector('#main > div.tvproduct-page-wrapper > div.tvprduct-image-info-wrapper.clearfix.row > div.col-md-6.tv-product-page-content > div.product-prices > div.product-price.h5 > div > span').innerText;
-    });
-    await page.close();
-    await browser.close();
-   datos.push({ url: urlPcNitro, precio: text, precioParse: formatearPrecio(text) });
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto(urlPcNitro);
+        const text = await page.evaluate(() => {
+            return document.querySelector('#main > div.tvproduct-page-wrapper > div.tvprduct-image-info-wrapper.clearfix.row > div.col-md-6.tv-product-page-content > div.product-prices > div.product-price.h5 > div > span').innerText;
+        });
+        await page.close();
+        await browser.close();
+       datos.push({ url: urlPcNitro, precio: text, precioParse: formatearPrecio(text) });
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
 async function scrapearHitesPS5() {
-    const { data } = await axios.get(urlHites);
-    const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
-    const precio = $('#zoom-837800001 > div.row.d-none.d-lg-flex > div > div > div > div > span.price-item.sales > span').first().text();
-    datos.push({ url: urlHites, precio: precio.trim(), precioParse: formatearPrecio(precio) });
+    try {
+        const { data } = await axios.get(urlHites);
+        const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
+        const precio = $('#zoom-837800001 > div.row.d-none.d-lg-flex > div > div > div > div > span.price-item.sales > span').first().text();
+        datos.push({ url: urlHites, precio: precio.trim(), precioParse: formatearPrecio(precio) });
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
 async function scrapearParisPS5() {
-    const { data } = await axios.get(urlParis);
-    const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
-    const precio = $('#pdpMain > div > div.col-xs-12.col-sm-12.col-md-6.col-lg-5.info-product-detail > div > div.col-xs-12.product-price-2 > div > div.price__inner > div.price__text-wrap.price__text-wrap--primary > div.price__text').first().text();
-   datos.push({ url: urlParis, precio: precio, precioParse: formatearPrecio(precio) });
+    try {
+        const { data } = await axios.get(urlParis);
+        const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
+        const precio = $('#pdpMain > div > div.col-xs-12.col-sm-12.col-md-6.col-lg-5.info-product-detail > div > div.col-xs-12.product-price-2 > div > div.price__inner > div.price__text-wrap.price__text-wrap--primary > div.price__text').first().text();
+       datos.push({ url: urlParis, precio: precio, precioParse: formatearPrecio(precio) });
+    } catch (error) {
+        console.error(error);
+    }
+
 }
 
 async function scrapearWeplayPS5() {
-    const { data } = await axios.get(urlWeplay);
-    const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
-    const precio = $('#product-price-35943 > span').first().text();
-    datos.push({ url: urlWeplay, precio: precio, precioParse: formatearPrecio(precio) });
+    try {
+        const { data } = await axios.get(urlWeplay);
+        const $ = cheerio.load(data, { normalizeWhitespace: false, xmlMode: true });
+        const precio = $('#product-price-35943 > span').first().text();
+        datos.push({ url: urlWeplay, precio: precio, precioParse: formatearPrecio(precio) });  
+    } catch (error) {
+        console.error(error);
+    }
+
 
 }
 
 async function scrapearLaPolarPS5() {
-    const { data } = await axios.get(urlLaPolar);
-    const $ = cheerio.load(data);
-    const precio = $('body > div.page > div > div.ms-contain-desktoplarge.pdp-wrapper.product-wrapper.product-detail > div.ms-row.pdp-image-and-detail.ms-margin-hp.collapsed.product-detail > div.pdp-right-content.details-container.col-xs-12.col-sm.ms-no-padding.js-details-container > div > div.col-xs-12.ms-flex.ms-no-padding.prices-actions > div > p.la-polar.price.js-tlp-price.lp-font--barlow-bold.ms-flex > span.price-value').text();
-    datos.push({ url: urlLaPolar, precio: precio, precioParse: formatearPrecio(precio) });
+    try {
+        const { data } = await axios.get(urlLaPolar);
+        const $ = cheerio.load(data);
+        const precio = $('body > div.page > div > div.ms-contain-desktoplarge.pdp-wrapper.product-wrapper.product-detail > div.ms-row.pdp-image-and-detail.ms-margin-hp.collapsed.product-detail > div.pdp-right-content.details-container.col-xs-12.col-sm.ms-no-padding.js-details-container > div > div.col-xs-12.ms-flex.ms-no-padding.prices-actions > div > p.la-polar.price.js-tlp-price.lp-font--barlow-bold.ms-flex > span.price-value').text();
+        datos.push({ url: urlLaPolar, precio: precio, precioParse: formatearPrecio(precio) });
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
 async function scrapearFalabellaPS5() {
-    let PRECIOREAL = 0
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
 
-        await page.goto(urlFalabella);
-        const text = await page.evaluate(() => {
-            return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
-        });
-       datos.push({ url: urlFalabella, precio: text, precioParse: formatearPrecio(text)});
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+    
+            await page.goto(urlFalabella);
+            const text = await page.evaluate(() => {
+                return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
+            });
+           datos.push({ url: urlFalabella, precio: text, precioParse: formatearPrecio(text)});
+    
+        await page.close();
+        await browser.close();
+    } catch (error) {
+        console.error(error);
+        await page.close();
+        await browser.close();
+    }
 
-    await page.close();
-    await browser.close();
 }
 
 const allPromise = Promise.all([scrapearParisPS5(), scrapearWeplayPS5(),scrapearLaPolarPS5(),scrapearFalabellaPS5(),scrapearHitesPS5(),scrapearPcNitroPS5(),
-    scrapearGoldenGamerPS5(),scrapearTottusPS5(),scrapearRipleyPS5()]);
+    scrapearGoldenGamerPS5(),scrapearTottusPS5(),scrapearRipleyPS5(),scrapearProMovilPS5()]);
 
 console.log("Buscando Ofertas ................");
 
