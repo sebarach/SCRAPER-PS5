@@ -1,4 +1,5 @@
 
+require('dotenv').config();
 const axios = require("axios");
 const cheerio = require("cheerio");
 const puppeteer = require('puppeteer');
@@ -19,7 +20,7 @@ const formatearPrecio = (precio)=> precio.replace(/[^0-9,.]+/g, "").replace(/[,.
 const express = require('express');
 const app = express();
 app.use(cors());
-const puerto = 3000;
+
 
 
 app.use((req,res,next)  => {
@@ -33,7 +34,7 @@ app.use((req,res,next)  => {
 
         var user = credenciales[0];
         var pass = credenciales[1];
-        if (!(user ==='sebastian' && pass === '123')) {
+        if (!(user ===process.env.TOKENUSERNAME && pass === process.env.TOKENPASS)) {
             var err = new Error('Invalid credentials');
             res.status(401).set('WWW-Authenticate', 'Basic');
             next(err);
@@ -54,8 +55,8 @@ app.get('/',(req,res)=>{
 })
 
 
-app.listen(process.env.PORT || puerto,()=>{
-    console.log(`app corriendo en el puerto ${puerto}`)
+app.listen(process.env.PORT,()=>{
+    console.log(`app corriendo en el puerto ${process.env.PORT}`)
 })
 
 async function scrapearProMovilPS5() {
