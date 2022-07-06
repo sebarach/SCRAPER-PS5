@@ -11,4 +11,17 @@ const variables = {
     urlProMovilExport : 'https://www.promovil.cl/inicio/2716-consola-playstation-5-ps5-edici%C3%B3n-digital-blanca.html'
 }
 
-module.exports = variables;
+const chromeOptions = {
+    headles:true,
+    defaultViewPort:null,
+    args:[
+        "--incognito",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote",
+        "--disable-setuid-sandbox"
+    ],
+    waitUntil: 'load',
+    timeout: 0
+}
+module.exports = {variables,chromeOptions};

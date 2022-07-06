@@ -19,6 +19,7 @@ const formatearPrecio = (precio)=> precio.replace(/[^0-9,.]+/g, "").replace(/[,.
 // }
 
 app.use(cors());
+app.use(express.json());
 app.listen(3000, function() {console.log("App Corriendo en el puerto 3000");});
 
 
