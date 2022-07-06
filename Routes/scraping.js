@@ -1,6 +1,6 @@
 const app = require('express')  
 const router = app.Router() 
-const {variables,chromeOptions} = require('../utils.js')
+const {variables,chromeOptions,chromeOptions2} = require('../utils.js')
 const axios = require("axios");
 const cheerio = require("cheerio");
 const puppeteer = require('puppeteer');
@@ -115,7 +115,7 @@ async function scrapearTottusPS5() {
     try {
     let browser = await puppeteer.launch();
     let page = await browser.newPage();
-    await page.goto(variables.urlToTusExport,{chromeOptions});
+    await page.goto(variables.urlToTusExport,{chromeOptions2});
     let text = await page.evaluate(() => {
         return document.querySelector('#testId-pod-prices-110655008 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
     });
@@ -134,7 +134,7 @@ async function scrapearPcNitroPS5() {
     try {
         let browser = await puppeteer.launch();
         let page = await browser.newPage();
-        await page.goto(variables.urlPcNitroExport,{chromeOptions});
+        await page.goto(variables.urlPcNitroExport,{chromeOptions2});
         let text = await page.evaluate(() => {
             return document.querySelector('#main > div.tvproduct-page-wrapper > div.tvprduct-image-info-wrapper.clearfix.row > div.col-md-6.tv-product-page-content > div.product-prices > div.product-price.h5 > div > span').innerText;
         });
@@ -152,7 +152,7 @@ async function scrapearFalabellaPS5() {
         let browser = await puppeteer.launch();
         let page = await browser.newPage();
     
-            await page.goto(variables.urlFalabellaExport,{chromeOptions});
+            await page.goto(variables.urlFalabellaExport,{chromeOptions2});
             let text = await page.evaluate(() => {
                 return document.querySelector('#testId-pod-prices-15706659 > ol > li.jsx-2797633547.prices-0 > div > span').innerText;
             });
@@ -172,7 +172,7 @@ async function scrapearProMovilPS5() {
     try {
     let browser = await puppeteer.launch();
     let page = await browser.newPage();
-    await page.goto(variables.urlProMovilExport,{chromeOptions});
+    await page.goto(variables.urlProMovilExport,{chromeOptions2});
     let text = await page.evaluate(() => {
         return document.querySelector('#main > div:nth-child(2) > div.col-md-7 > div.product-prices > div.product-price.h5.has-discount > div > span:nth-child(1)').innerText;
     });
