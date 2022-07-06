@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "Cotizador de Precios",
   "main": "app.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "test": "node test.js",
-    "dev": "nodemon scraping.js"
+    "dev": "nodemon app.js",
+    "build":"webpack"
   },
   "author": "Sebastian Sepulveda",
   "license": "ISC",
@@ -17,6 +21,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "node-fetch": "^2.6.7",
     "nodemon": "^2.0.18",
     "puppeteer": "^15.2.0"
   },
