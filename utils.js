@@ -29,4 +29,4 @@ const chromeOptions2 = {
     waitUntil: 'networkidle2'
 }
 
-module.exports = {variables,chromeOptions};
+module.exports = {variables,chromeOptions,chromeOptions2};
