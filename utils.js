@@ -25,8 +25,4 @@ const chromeOptions = {
     timeout: 0
 }
 
-const chromeOptions2 = {
-    waitUntil: 'networkidle2'
-}
-
-module.exports = {variables,chromeOptions,chromeOptions2};
+module.exports = {variables,chromeOptions};

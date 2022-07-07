@@ -4,7 +4,7 @@
   "description": "Cotizador de Precios",
   "main": "app.js",
   "engines": {
-    "node": "14.x"
+    "node": "16.x"
   },
   "scripts": {
     "start": "node app.js",
